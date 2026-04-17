@@ -6539,8 +6539,11 @@ async function copyActive() {
 
 /* ── TOGGLES ── */
 function toggleVis(checkId, panelId) {
-  $$(checkId).addEventListener("change", function () {
-    $$(panelId).classList.toggle("hidden", !this.checked);
+  const checkEl = $$(checkId);
+  const panelEl = $$(panelId);
+  if (!checkEl || !panelEl) return;
+  checkEl.addEventListener("change", function () {
+    panelEl.classList.toggle("hidden", !this.checked);
     render();
   });
 }
@@ -7090,6 +7093,74 @@ function initializeNewFeatures() {
 
 initializeNewFeatures();
 render();
+
+
+/* ── INSTANT NOTES REFRESH PATCH ── */
+let __estimatorRefreshRaf = 0;
+
+function runEstimatorFn(name) {
+  const fn = window[name];
+  if (typeof fn === "function") fn();
+}
+
+function refreshEstimatorNotesNow() {
+  // Keep notes/output plain text; only speed up when existing builders run.
+  runEstimatorFn("render");
+  runEstimatorFn("updatePreview");
+  runEstimatorFn("updateCrewNotes");
+  runEstimatorFn("crewUpdate");
+  runEstimatorFn("romUpdate");
+  runEstimatorFn("bqWeightCalcUpdate");
+  runEstimatorFn("regUpdate");
+}
+
+function scheduleEstimatorRefresh() {
+  if (__estimatorRefreshRaf) cancelAnimationFrame(__estimatorRefreshRaf);
+  __estimatorRefreshRaf = requestAnimationFrame(() => {
+    __estimatorRefreshRaf = 0;
+    refreshEstimatorNotesNow();
+  });
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  const formPanel = document.getElementById("form-panel");
+  if (!formPanel) return;
+
+  formPanel.addEventListener("input", (e) => {
+    const t = e.target;
+    if (t && t.matches("input, select, textarea")) scheduleEstimatorRefresh();
+  }, true);
+
+  formPanel.addEventListener("change", (e) => {
+    const t = e.target;
+    if (t && t.matches("input, select, textarea")) scheduleEstimatorRefresh();
+  }, true);
+
+  formPanel.addEventListener("click", (e) => {
+    const t = e.target;
+    if (!t) return;
+    if (
+      t.matches('input[type="checkbox"], input[type="radio"]') ||
+      t.closest(".check-row") ||
+      t.tagName === "LABEL"
+    ) {
+      setTimeout(scheduleEstimatorRefresh, 0);
+    }
+  }, true);
+
+  const hourlyRate = document.getElementById("hourlyRate");
+  if (hourlyRate) {
+    hourlyRate.addEventListener("change", () => {
+      if (hourlyRate.checked && typeof switchTab === "function") {
+        switchTab("crew");
+      }
+      scheduleEstimatorRefresh();
+    });
+  }
+
+  scheduleEstimatorRefresh();
+});
+
 </script>
 
 
