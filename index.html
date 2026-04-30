@@ -367,7 +367,8 @@ body.wide-pane #form-panel { display:none; }
     </div>
     <div class="field">
       <label class="field-label">Origin Floor(s)</label>
-      <select id="originFloors"><option>1</option><option>2</option><option>3</option><option>4+</option></select>
+      <select id="originFloors" onchange="syncFloorOther('origin');render();regUpdate();"><option>1</option><option>2</option><option>3</option><option>4</option><option value="Other">Other</option></select>
+      <input type="number" id="originFloorsOther" placeholder="Enter floor" min="5" oninput="render();regUpdate();" style="display:none;margin-top:6px;width:100%;font-size:12px;padding:4px 7px;border:1.5px solid #c8e6c9;border-radius:5px;font-family:inherit;">
     </div>
     <div id="originStorageOpts" class="hidden">
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;">
@@ -387,7 +388,8 @@ body.wide-pane #form-panel { display:none; }
     </div>
     <div class="field">
       <label class="field-label">Destination Floor(s)</label>
-      <select id="destFloors"><option>1</option><option>2</option><option>3</option><option>4+</option></select>
+      <select id="destFloors" onchange="syncFloorOther('dest');render();regUpdate();"><option>1</option><option>2</option><option>3</option><option>4</option><option value="Other">Other</option></select>
+      <input type="number" id="destFloorsOther" placeholder="Enter floor" min="5" oninput="render();regUpdate();" style="display:none;margin-top:6px;width:100%;font-size:12px;padding:4px 7px;border:1.5px solid #c8e6c9;border-radius:5px;font-family:inherit;">
     </div>
 
     <div class="section-head">Services</div>
@@ -598,7 +600,8 @@ body.wide-pane #form-panel { display:none; }
       <!-- Hourly Rate Warning (shown when hourlyRate is checked) -->
       <div id="hourly-warning" style="display:none; background:#b71c1c; color:#fff; border-radius:10px; padding:18px 24px; max-width:600px; margin-bottom:18px;">
         <div style="font-size:18px; font-weight:900; letter-spacing:0.04em; text-transform:uppercase; margin-bottom:6px;">⚠️ DO NOT SEND AN ESTIMATE</div>
-        <div style="font-size:14px; line-height:1.7; font-weight:600; margin-bottom:10px;">Fill in Crew Notes on file, email the office, CC Nick and Brian — and tell them your hourly quote.<br>👉 <strong>Fill out the fields below.</strong></div>
+        <div style="font-size:14px; line-height:1.7; font-weight:600; margin-bottom:10px;">Fill in Crew Notes on file, email the office, CC Nick and Brian — and tell them your hourly quote.<br>👉 <strong>Fill out the fields below.</strong><br>📊 Use <strong>Building a Quote</strong> to help come up with hour ranges.</div>
+        <button type="button" onclick="switchTab('buildquote')" style="display:inline-block;background:#2e7d32;color:#fff;text-decoration:none;padding:7px 16px;border-radius:6px;font-size:12px;font-weight:900;letter-spacing:0.05em;text-transform:uppercase;font-family:Georgia,serif;border:none;cursor:pointer;margin-right:8px;">📊 Go To Building A Quote</button>
         <a href="https://docs.google.com/document/d/17EyqPKPtOv_rc413DANafPxiAZTVzwul0KpSURMMwVU/edit?usp=sharing" target="_blank" rel="noopener" style="display:inline-block;background:#fff;color:#b71c1c;text-decoration:none;padding:7px 16px;border-radius:6px;font-size:12px;font-weight:900;letter-spacing:0.05em;text-transform:uppercase;font-family:Georgia,serif;">📋 Quoting Hourly SOP</a>
       </div>
 
@@ -928,7 +931,6 @@ body.wide-pane #form-panel { display:none; }
         <strong style="color:#e65100;font-size:15px;">Instructions</strong> – Above is the link to the regulated move calculator, the password is <strong style="font-family:monospace;color:#1b5e20;">allmysons500</strong><br>
         If any field does not apply just leave it blank.
       </div>
-
       <div style="display:flex;gap:16px;align-items:flex-start;flex-wrap:wrap;max-width:940px;">
 
         <!-- INPUTS -->
@@ -1180,9 +1182,28 @@ body.wide-pane #form-panel { display:none; }
                   </select>
                 </div>
 
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;">
+                  <div>
+                    <label class="field-label" style="display:block;font-size:10px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:#555;margin-bottom:4px;">Low Weight (lbs)</label>
+                    <input type="number" id="romWeightLowValue" min="0" step="100" placeholder="Example: 6500" oninput="romUpdate()">
+                  </div>
+                  <div>
+                    <label class="field-label" style="display:block;font-size:10px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:#555;margin-bottom:4px;">High Weight (lbs)</label>
+                    <input type="number" id="romWeightHighValue" min="0" step="100" placeholder="Example: 8000" oninput="romUpdate()">
+                  </div>
+                </div>
+                <input type="hidden" id="romWeightValue" value="">
                 <div style="margin-bottom:10px;">
-                  <label class="field-label" style="display:block;font-size:10px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:#555;margin-bottom:4px;">Estimated Weight (lbs)</label>
-                  <input type="number" id="romWeightValue" min="0" step="100" placeholder="Example: 6500" oninput="romUpdate()">
+                  <label class="field-label" style="display:block;font-size:10px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:#555;margin-bottom:4px;">Labor Crew Size</label>
+                  <select id="romLaborCrewSize" onchange="romUpdate()">
+                    <option value="2">2 men</option>
+                    <option value="3" selected>3 men</option>
+                    <option value="4">4 men</option>
+                    <option value="5">5 men</option>
+                    <option value="6">6 men / 2 trucks</option>
+                    <option value="7">7 men / 2 trucks</option>
+                    <option value="8">8 men / 2 trucks</option>
+                  </select>
                 </div>
               </div>
 
@@ -1305,6 +1326,16 @@ body.wide-pane #form-panel { display:none; }
                 <div class="rl">Destination ROM</div>
                 <div class="rv" id="romDestValue">275</div>
                 <div class="ru">destination pace</div>
+              </div>
+              <div class="result-chip total">
+                <div class="rl">Low Labor</div>
+                <div class="rv" id="romLaborLow">0.0</div>
+                <div class="ru" id="romLaborLowSub">hours</div>
+              </div>
+              <div class="result-chip total">
+                <div class="rl">High Labor</div>
+                <div class="rv" id="romLaborHigh">0.0</div>
+                <div class="ru" id="romLaborHighSub">hours</div>
               </div>            </div>
 
             <div style="margin-top:14px;background:#fff;border:1.5px solid #c8e6c9;border-radius:8px;padding:12px;">
@@ -1322,7 +1353,7 @@ body.wide-pane #form-panel { display:none; }
           </div>
           <div class="quote-section-body">
             <div style="font-size:12px;color:#666;line-height:1.6;margin-bottom:14px;">
-              Crew suggestions auto-fill from the Weight and ROM calculators. ROM is pounds per guy per hour. We try to keep smaller moves around <strong>4 hours</strong> and larger moves around <strong>8-10 hours</strong>.
+              Crew suggestions auto-fill from the Weight and ROM calculators. ROM is pounds per guy per hour. Logic targets roughly <strong>9 labor hours</strong>, allows up to <strong>11 labor hours</strong>, caps at <strong>5 men per truck</strong>, and only uses <strong>6-8 men</strong> when a true 2-truck move is needed.
             </div>
 
             
@@ -1337,12 +1368,9 @@ body.wide-pane #form-panel { display:none; }
                 <input type="number" id="crewMiles" min="0" step="1" placeholder="Used for shuttle logic">
               </div>
               <div>
-                <label class="field-label" style="display:block;font-size:10px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:#555;margin-bottom:4px;">Move Size Goal</label>
-                <select id="crewGoal">
-                  <option value="auto">Auto</option>
-                  <option value="small">Small Move (4 hours)</option>
-                  <option value="large">Large Move (8-10 hours)</option>
-                </select>
+                <label class="field-label" style="display:block;font-size:10px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:#555;margin-bottom:4px;">One-Way Travel Time (hrs)</label>
+                <input type="number" id="crewTravelHours" min="0" step="0.25" placeholder="e.g. 1">
+                <div style="font-size:11px;color:#667;line-height:1.45;margin-top:5px;">1 hr does not count against the max. Over 1 hr does.</div>
               </div>
               <div>
                 <label class="field-label" style="display:block;font-size:10px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:#555;margin-bottom:4px;">Using ROM</label>
@@ -1352,7 +1380,7 @@ body.wide-pane #form-panel { display:none; }
 
             <label class="check-row" style="margin-top:12px;">
               <input type="checkbox" id="crewUseShuttle">
-              <span><strong>Use shuttle logic</strong> — for shorter trips where one truck can make two runs. Best fit when origin to destination is within 15 miles and the move is under 12,000 lbs.</span>
+              <span><strong>Use shuttle logic</strong> — one truck / 5 men max can make two trips if origin to destination is under 15 miles and the move is under 12,000 lbs. Adds 30 min under 8 miles, 1 hour from 8-15 miles.</span>
             </label>
 
             <div class="result-grid" style="margin-top:14px;">
@@ -1362,9 +1390,19 @@ body.wide-pane #form-panel { display:none; }
                 <div class="ru">guys</div>
               </div>
               <div class="result-chip">
-                <div class="rl">Estimated Hours</div>
+                <div class="rl">Labor Hours</div>
                 <div class="rv" id="crewHours">4.0</div>
-                <div class="ru">approx</div>
+                <div class="ru">incl. shuttle add if used</div>
+              </div>
+              <div class="result-chip">
+                <div class="rl">Labor + Travel Clock</div>
+                <div class="rv" id="crewClockHours">4.0</div>
+                <div class="ru">1 hr travel ignored</div>
+              </div>
+              <div class="result-chip">
+                <div class="rl">Hourly Labor From ROM</div>
+                <div class="rv" id="crewLaborRange">0.0</div>
+                <div class="ru">low-high hrs</div>
               </div>
               <div class="result-chip">
                 <div class="rl">Recommended Trucks</div>
@@ -5005,8 +5043,31 @@ function downloadCommission(key) {
 
 <script>
 /* ── HELPERS ── */
-function val(id) { return document.getElementById(id)?.value || ""; }
+function val(id) {
+  if (id === "originFloors") {
+    const sel = document.getElementById("originFloors")?.value || "";
+    return sel === "Other" ? (document.getElementById("originFloorsOther")?.value || "Other") : sel;
+  }
+  if (id === "destFloors") {
+    const sel = document.getElementById("destFloors")?.value || "";
+    return sel === "Other" ? (document.getElementById("destFloorsOther")?.value || "Other") : sel;
+  }
+  return document.getElementById(id)?.value || "";
+}
 function chk(id) { return document.getElementById(id)?.checked || false; }
+function syncFloorOther(side) {
+  const selectId = side === "origin" ? "originFloors" : "destFloors";
+  const inputId  = side === "origin" ? "originFloorsOther" : "destFloorsOther";
+  const sel = document.getElementById(selectId);
+  const input = document.getElementById(inputId);
+  if (!sel || !input) return;
+  if (sel.value === "Other") {
+    input.style.display = "block";
+  } else {
+    input.style.display = "none";
+    input.value = "";
+  }
+}
 
 function syncLaborOnly() {
   const lo = $$("laborOnly");
@@ -5035,7 +5096,7 @@ function storyStr(f) {
   return f + " Story";
 }
 function aptFloorStr(f) {
-  if (f === "4+") return "the 4th floor or higher";
+  if (f === "Other") return "the entered floor";
   return `the ${f}${ordinal(f)} floor`;
 }
 function isApt(t) { return t === "Apartment" || t === "Condo" || t === "Office"; }
@@ -5689,7 +5750,7 @@ function generateNotes() {
   function locSummary(type, floors) {
     if (type === "Storage") return "storage";
     if (isApt(type)) {
-      const floorStr = floors === "4+" ? "4th floor or higher" : `${floors}${ordinal(floors)} floor`;
+      const floorStr = floors === "Other" ? "entered floor" : `${floors}${ordinal(floors)} floor`;
       return `${floorStr} ${type.toLowerCase()}`;
     }
     return `${storyStr(floors).toLowerCase()} ${type.toLowerCase()}`;
@@ -5823,7 +5884,9 @@ function generateNotes() {
     const days = parseInt(val("multidayDays")) || 2;
     let daySchedule = [];
     for (let i = 1; i <= days; i++) {
-      const activity = val(`multidayDay${i}`) || "TBD";
+      const selectedActivity = val(`multidayDay${i}`) || "TBD";
+      const otherActivity = val(`multidayDay${i}Other`);
+      const activity = selectedActivity === "Other" ? (otherActivity || "Other") : selectedActivity;
       daySchedule.push(`Day ${i}: ${activity}`);
     }
     push(`Multiday move: ${daySchedule.join(", ")}`);
@@ -6288,9 +6351,18 @@ function syncMultidayMove() {
 function updateMultidayBoxes() {
   const days = parseInt(val("multidayDays")) || 2;
   const container = $$("multidayBoxes");
+
+  const saved = [];
+  for (let i = 1; i <= days; i++) {
+    saved[i] = {
+      activity: val(`multidayDay${i}`),
+      other: val(`multidayDay${i}Other`)
+    };
+  }
+
   container.innerHTML = "";
   
-  const activities = ["Pack", "Load", "Travel", "Deliver", "Unpacking"];
+  const activities = ["Pack", "Load", "Travel", "Deliver", "Unpacking", "Other"];
   
   for (let i = 1; i <= days; i++) {
     const dayDiv = document.createElement("div");
@@ -6302,7 +6374,6 @@ function updateMultidayBoxes() {
     
     const select = document.createElement("select");
     select.id = `multidayDay${i}`;
-    select.onchange = () => render();
     select.style.width = "100%";
     select.style.fontSize = "12px";
     select.style.padding = "4px 7px";
@@ -6316,12 +6387,34 @@ function updateMultidayBoxes() {
       option.textContent = activity;
       select.appendChild(option);
     });
+
+    const otherInput = document.createElement("input");
+    otherInput.type = "text";
+    otherInput.id = `multidayDay${i}Other`;
+    otherInput.placeholder = "Type custom day activity";
+    otherInput.value = saved[i]?.other || "";
+    otherInput.style.display = "none";
+    otherInput.style.width = "100%";
+    otherInput.style.marginTop = "6px";
+    otherInput.style.fontSize = "12px";
+    otherInput.style.padding = "4px 7px";
+    otherInput.style.border = "1.5px solid #c8e6c9";
+    otherInput.style.borderRadius = "5px";
+    otherInput.style.fontFamily = "inherit";
+    otherInput.oninput = () => render();
+
+    select.value = saved[i]?.activity || "Pack";
+    otherInput.style.display = select.value === "Other" ? "block" : "none";
+    select.onchange = () => {
+      otherInput.style.display = select.value === "Other" ? "block" : "none";
+      render();
+    };
     
     dayDiv.appendChild(select);
+    dayDiv.appendChild(otherInput);
     container.appendChild(dayDiv);
   }
 }
-
 function syncSpecialtyItems() {
   const on = $$("specialtyItems").checked;
   $$("specialtyOpts").style.display = on ? "block" : "none";
@@ -6460,7 +6553,8 @@ function render() {
     $$("preview-content").innerHTML =
       `<div style="background:#b71c1c;color:#fff;border-radius:10px;padding:20px 24px;max-width:560px;">
         <div style="font-size:20px;font-weight:900;letter-spacing:0.04em;text-transform:uppercase;margin-bottom:8px;">⚠️ DO NOT SEND AN ESTIMATE</div>
-        <div style="font-size:14px;line-height:1.7;font-weight:600;">Fill in Crew Notes on file, email the office, CC Nick and Brian — and tell them your hourly quote.<br>👉 <strong>Fill out the fields on the Crew Notes tab.</strong></div>
+        <div style="font-size:14px;line-height:1.7;font-weight:600;">Fill in Crew Notes on file, email the office, CC Nick and Brian — and tell them your hourly quote.<br>👉 <strong>Fill out the fields on the Crew Notes tab.</strong><br>📊 Use <strong>Building a Quote</strong> to help come up with hour ranges.</div>
+        <button type="button" onclick="switchTab('buildquote')" style="margin-top:12px;display:inline-block;background:#2e7d32;color:#fff;text-decoration:none;padding:7px 16px;border-radius:6px;font-size:12px;font-weight:900;letter-spacing:0.05em;text-transform:uppercase;font-family:Georgia,serif;border:none;cursor:pointer;">📊 Go To Building A Quote</button>
       </div>`;
   } else {
     $$("preview-content").innerHTML = lines.map(l => l === "" ? "<p>&nbsp;</p>" : `<p>${applyBrand(l)}</p>`).join("");
@@ -6619,6 +6713,8 @@ function toggleStorageFields() {
   regUpdate();
 }
 toggleStorageFields();
+syncFloorOther("origin");
+syncFloorOther("dest");
 
 document.querySelectorAll("select, input").forEach(el => {
   el.addEventListener("change", () => { render(); regUpdate(); });
@@ -6646,6 +6742,109 @@ const REG_STATES = {
   "Virginia":      { miles: 31  },
   "Washington":    { miles: 55  },
 };
+
+function buildRegSidebarNotes() {
+  const lines = [];
+  const moveType = val("moveType");
+  const estimateType = val("estimateType");
+  const numTrucks = val("numTrucks");
+  const originType = val("originType");
+  const destType = val("destType");
+  const originFloors = val("originFloors");
+  const destFloors = val("destFloors");
+  const packing = val("packing");
+
+  lines.push("Sidebar / access details:");
+  if (moveType) lines.push(`Move Type – ${moveType}`);
+  if (estimateType) lines.push(`Estimate Type – ${estimateType}`);
+  if (numTrucks) lines.push(`Number of Trucks – ${numTrucks}`);
+  if (originType || originFloors) lines.push(`Origin – ${originType || "location"}, floor/story ${originFloors || "not provided"}`);
+  if (destType || destFloors) lines.push(`Destination – ${destType || "location"}, floor/story ${destFloors || "not provided"}`);
+  if (packing) lines.push(`Packing – ${packing}`);
+
+  if (packing === "Partial") {
+    const rooms = val("partialRooms") === "Other" ? (val("partialRoomsOther") || "Other") : val("partialRooms");
+    if (rooms) lines.push(`Partial packing rooms – ${rooms}`);
+  }
+  if (chk("unpacking")) lines.push("Unpacking included.");
+
+  const selectedMoveOptions = [];
+  if (chk("fullMove")) selectedMoveOptions.push("Full Move");
+  if (chk("partialMove")) selectedMoveOptions.push("Partial Move");
+  if (chk("furnitureOnly")) selectedMoveOptions.push("Furniture Only");
+  if (chk("insuranceMove")) selectedMoveOptions.push("Insurance / Contract Move");
+  if (chk("hourlyRate")) selectedMoveOptions.push("Hourly Rate");
+  if (chk("oldDominionMove")) selectedMoveOptions.push("Old Dominion");
+  if (chk("multidayMove")) selectedMoveOptions.push("Multiday Move");
+  if (selectedMoveOptions.length) lines.push(`Move Options – ${selectedMoveOptions.join(", ")}`);
+
+  if (chk("laborOnly")) {
+    const laborBits = [];
+    if (chk("laborLoading")) laborBits.push("Loading");
+    if (chk("laborUnloading")) laborBits.push("Unloading");
+    if (chk("laborPacking")) laborBits.push("Packing");
+    lines.push(`Labor Only – ${laborBits.length ? laborBits.join(", ") : "selected"}`);
+  }
+
+  if (chk("multidayMove")) {
+    const dayLines = [];
+    document.querySelectorAll(".multiday-day-select").forEach((sel, idx) => {
+      let v = sel.value;
+      if (v === "Other") {
+        const other = document.getElementById(`multidayOther${idx + 1}`)?.value || "Other";
+        v = other;
+      }
+      if (v) dayLines.push(`Day ${idx + 1}: ${v}`);
+    });
+    if (dayLines.length) lines.push(`Multiday Schedule – ${dayLines.join("; ")}`);
+  }
+
+  const addOns = [];
+  if (chk("trucksToCapacity")) addOns.push("Truck(s) to Capacity");
+  if (chk("loadUnloadOverflow")) addOns.push(`Load/Unload Overflow${val("overflowTrucks") ? ` (${val("overflowTrucks")} AMS trucks)` : ""}`);
+  if (chk("shuttle")) addOns.push("Shuttle / Overflow Trip");
+  if (chk("truck30ft")) addOns.push("30-Foot Truck");
+  if (chk("longWalk")) addOns.push(`Long Walk (${val("longWalkLocation") || "location not specified"})`);
+  if (chk("sharedElevator")) addOns.push(`Shared Elevator (${val("elevatorLocation") || "location not specified"})`);
+  if (chk("elevReservation")) addOns.push(`Elevator Reservation (${val("elevResLocation") || "location not specified"})`);
+  if (chk("extraStop")) addOns.push(`Extra Stop (${val("extraStopType") || "stop"})`);
+  if (chk("overnightStorage")) addOns.push(`Overnight Storage (${val("overnightNights") || "1"} night${(val("overnightNights") || "1") !== "1" ? "s" : ""})`);
+  if (chk("coi")) addOns.push("COI Required");
+
+  if (chk("specialtyItems")) {
+    const item = val("specialtyType") === "Other" ? (val("specialtyOtherText") || "Other specialty item") : val("specialtyType");
+    const weight = val("specialtyWeight") ? `, ${val("specialtyWeight")} lbs` : "";
+    addOns.push(`Specialty Item – ${item}, ${val("specialtyFloor") || "floor not specified"}${weight}`);
+  }
+
+  if (chk("applianceSwap")) {
+    const apps = [];
+    if (chk("appFridge")) apps.push("Fridge");
+    if (chk("appWasherDryer")) apps.push("Washer and Dryer");
+    if (chk("appOther")) apps.push(val("appOtherText") || "Other");
+    addOns.push(`Appliance Swap${apps.length ? ` – ${apps.join(", ")}` : ""}`);
+  }
+
+  if (chk("parking")) {
+    const po = val("parkingOrigin") === "Other" ? (val("parkingOriginText") || "Other") : val("parkingOrigin");
+    const pd = val("parkingDestination") === "Other" ? (val("parkingDestinationText") || "Other") : val("parkingDestination");
+    addOns.push(`Parking – Origin: ${po}; Destination: ${pd}`);
+  }
+
+  if (chk("intoStorage")) addOns.push(`Move into AMS storage${val("storageVaults") ? ` – ${val("storageVaults")} vaults` : ""}${val("storageRate") ? ` at ${val("storageRate")}/month` : ""}`);
+  if (chk("storageOut")) addOns.push(`Move out of AMS storage${val("storageOutCID") ? ` – CID ${val("storageOutCID")}` : ""}`);
+
+  if (addOns.length) lines.push(`Add-ons – ${addOns.join("; ")}`);
+
+  const manual = document.getElementById("manualNotes")?.value?.trim();
+  if (manual) {
+    lines.push("");
+    lines.push("Additional typed notes:");
+    manual.split(/\n+/).map(x => x.trim()).filter(Boolean).forEach(x => lines.push(x));
+  }
+
+  return lines;
+}
 
 function regUpdate() {
   const stateVal    = val("regState");
@@ -6846,6 +7045,20 @@ function romInterstateBase(floor) {
   const f = parseInt(floor || 1, 10);
   return Math.max(175, 250 - ((f - 1) * 25));
 }
+function romGetLowWeight() {
+  return parseInt($$("romWeightLowValue")?.value || "0", 10);
+}
+function romGetHighWeight() {
+  const high = parseInt($$("romWeightHighValue")?.value || "0", 10);
+  const low = romGetLowWeight();
+  return high > 0 ? high : low;
+}
+function romGetDisplayWeight() {
+  const low = romGetLowWeight();
+  const high = romGetHighWeight();
+  if ($$("romWeightValue")) $$('romWeightValue').value = high || low || "";
+  return high || low || 0;
+}
 function romWeightPenalty(weight) {
   const w = parseInt(weight || 0, 10);
   return Math.floor(w / 10000) * 25;
@@ -6854,7 +7067,7 @@ function romComputeSide(side) {
   const moveType = $$("romMoveType")?.value || "local";
   const type = $$(side === "origin" ? "romOriginType" : "romDestType")?.value || "house";
   const floor = parseInt($$(side === "origin" ? "romOriginFloor" : "romDestFloor")?.value || "1", 10);
-  const weight = parseInt($$("romWeightValue")?.value || "0", 10);
+  const weight = romGetDisplayWeight();
   const elevator = $$(side === "origin" ? "romOriginElevator" : "romDestElevator")?.value || "no";
   const longWalk = $$(side === "origin" ? "romOriginLongWalk" : "romDestLongWalk")?.value || "no";
   const driveUp = $$(side === "origin" ? "romOriginDriveUp" : "romDestDriveUp")?.value || "no";
@@ -6890,12 +7103,23 @@ function romUpdate() {
   if ($$("romOriginValue")) $$("romOriginValue").textContent = origin.finalRom;
   if ($$("romDestValue")) $$("romDestValue").textContent = dest.finalRom;
 
-  const weight = parseInt($$("romWeightValue")?.value || "0", 10);
+  const lowWeight = romGetLowWeight();
+  const highWeight = romGetHighWeight();
+  const weight = romGetDisplayWeight();
   const moveType = $$("romMoveType")?.value || "local";
+  const lowerRom = Math.min(origin.finalRom || 275, dest.finalRom || 275);
+  const laborCrew = parseInt($$("romLaborCrewSize")?.value || "3", 10);
+  const lowLabor = (lowWeight > 0 && lowerRom > 0 && laborCrew > 0) ? (lowWeight / (lowerRom * laborCrew)) : 0;
+  const highLabor = (highWeight > 0 && lowerRom > 0 && laborCrew > 0) ? (highWeight / (lowerRom * laborCrew)) : 0;
+
+  if ($$("romLaborLow")) $$('romLaborLow').textContent = lowLabor ? lowLabor.toFixed(1) : "0.0";
+  if ($$("romLaborHigh")) $$('romLaborHigh').textContent = highLabor ? highLabor.toFixed(1) : "0.0";
+  if ($$("romLaborLowSub")) $$('romLaborLowSub').textContent = laborCrew + " men / lower ROM";
+  if ($$("romLaborHighSub")) $$('romLaborHighSub').textContent = laborCrew + " men / lower ROM";
 
   const notes = [
     `Move Type: ${moveType === "interstate" ? "Interstate" : "Local / In-State"}`,
-    `Estimated Weight: ${weight ? weight.toLocaleString() + " lbs" : "Not entered"}`,
+    `Estimated Weight: ${lowWeight ? lowWeight.toLocaleString() + " lbs" : "Not entered"}${highWeight && highWeight !== lowWeight ? " - " + highWeight.toLocaleString() + " lbs" : ""}`,
     "",
     "Origin:",
     `  Type / Access: ${origin.detail}`,
@@ -6906,6 +7130,7 @@ function romUpdate() {
     `  ROM: ${dest.finalRom}`,
     "",
     `Limiting Factor: ${limiting}`,
+    `Labor Estimate: ${lowLabor ? lowLabor.toFixed(1) : "0.0"}${highLabor && highLabor !== lowLabor ? " - " + highLabor.toFixed(1) : ""} hrs with ${laborCrew} men using lower ROM`,
     "Use the LOWER ROM when quoting"
   ];
 
@@ -6927,14 +7152,29 @@ function toggleQuoteSection(btn) {
 }
 
 
-function crewGetEffectiveWeight() {
+function roundQuarter(n) {
+  return Math.round((Number(n) || 0) * 4) / 4;
+}
+function fmtHours(n) {
+  const v = roundQuarter(n);
+  return v.toFixed(2).replace(/\.00$/, ".0").replace(/(\.\d)0$/, "$1");
+}
+function crewGetEffectiveLowWeight() {
+  const manualLow = parseInt($$("crewWeight")?.value || "0", 10);
+  if (manualLow > 0) return manualLow;
+  const romLow = (typeof romGetLowWeight === "function") ? romGetLowWeight() : 0;
+  const romHigh = (typeof romGetHighWeight === "function") ? romGetHighWeight() : parseInt($$("romWeightValue")?.value || "0", 10);
+  return romLow || romHigh || 0;
+}
+function crewGetEffectiveHighWeight() {
   const manual = parseInt($$("crewWeight")?.value || "0", 10);
   if (manual > 0) return manual;
-
-  const romWeight = parseInt($$("romWeightValue")?.value || "0", 10);
-  if (romWeight > 0) return romWeight;
-
-  return 0; // ONLY ROM — no average weights fallback
+  const romHigh = (typeof romGetHighWeight === "function") ? romGetHighWeight() : parseInt($$("romWeightValue")?.value || "0", 10);
+  const romLow = (typeof romGetLowWeight === "function") ? romGetLowWeight() : 0;
+  return romHigh || romLow || 0;
+}
+function crewGetEffectiveWeight() {
+  return crewGetEffectiveHighWeight();
 }
 function crewGetEffectiveRom() {
   const o = parseInt($$("romOriginValue")?.textContent || "0", 10);
@@ -6942,59 +7182,99 @@ function crewGetEffectiveRom() {
   const vals = [o, d].filter(v => v > 0);
   return vals.length ? Math.min(...vals) : 275;
 }
+function crewCalcForWeight(weight, rom, miles, useShuttle, travelHours) {
+  const w = Number(weight) || 0;
+  const r = Number(rom) || 275;
+  const m = Number(miles) || 0;
+  const t = Number(travelHours) || 0;
+  const eligibleShuttle = !!useShuttle && w > 0 && w < 12000 && m > 0 && m < 15;
+  const mustTwoTruck = w >= 12000 || m >= 15;
+  const shuttleAdd = eligibleShuttle ? (m < 8 ? 0.5 : 1.0) : 0;
+
+  const travelAgainstMax = Math.max(0, t - 1);
+  const maxLaborTarget = Math.max(1, 11 - travelAgainstMax);
+  const idealLaborTarget = Math.max(1, 9 - travelAgainstMax);
+
+  let trucks = mustTwoTruck ? 2 : 1;
+  let crew = 2;
+
+  if (w > 0 && r > 0) {
+    if (eligibleShuttle) {
+      trucks = 1;
+      crew = Math.ceil(w / (r * Math.max(1, idealLaborTarget - shuttleAdd)));
+      crew = Math.max(2, Math.min(5, crew));
+      while (crew < 5 && ((w / (crew * r)) + shuttleAdd) > maxLaborTarget) crew++;
+    } else if (mustTwoTruck) {
+      trucks = 2;
+      crew = Math.ceil(w / (r * idealLaborTarget));
+      crew = Math.max(6, Math.min(8, crew));
+      while (crew < 8 && (w / (crew * r)) > maxLaborTarget) crew++;
+    } else {
+      trucks = 1;
+      crew = Math.ceil(w / (r * idealLaborTarget));
+      crew = Math.max(2, Math.min(5, crew));
+      while (crew < 5 && (w / (crew * r)) > maxLaborTarget) crew++;
+    }
+  }
+
+  let labor = (w > 0 && r > 0 && crew > 0) ? (w / (crew * r)) + shuttleAdd : 0;
+  labor = roundQuarter(labor);
+  const clock = roundQuarter(labor + travelAgainstMax);
+  const totalSameDayDeliveryClock = roundQuarter(labor + t);
+
+  let note = "Standard 1-truck move";
+  if (eligibleShuttle) note = `1 truck shuttle / 2 trips (${m < 8 ? "+0.5 hr" : "+1.0 hr"} labor)`;
+  else if (mustTwoTruck) note = (w >= 12000 && m >= 15) ? "2 trucks: 12k+ lbs and 15+ miles" : (w >= 12000 ? "2 trucks: 12k+ lbs" : "2 trucks: 15+ miles / no shuttle");
+  else if (labor > 11) note = "Review: labor over 11 hrs with 1 truck";
+
+  const deliveryNote = totalSameDayDeliveryClock > 12 ? "Next day delivery recommended" : "Same day delivery okay";
+  return { crew, trucks, labor, clock, shuttleAdd, eligibleShuttle, mustTwoTruck, note, deliveryNote, totalSameDayDeliveryClock, travelAgainstMax };
+}
 function crewUpdate() {
-  const weight = crewGetEffectiveWeight();
+  const lowWeight = crewGetEffectiveLowWeight();
+  const highWeight = crewGetEffectiveHighWeight();
+  const weight = highWeight || lowWeight;
   const rom = crewGetEffectiveRom();
-  const miles = parseInt($$("crewMiles")?.value || "0", 10);
-  const goal = $$("crewGoal")?.value || "auto";
+  const miles = parseFloat($$("crewMiles")?.value || "0") || 0;
+  const travelHours = parseFloat($$("crewTravelHours")?.value || "0") || 0;
+  const useShuttle = !!$$("crewUseShuttle")?.checked;
 
   if ($$("crewRomDisplay")) $$("crewRomDisplay").value = rom + " ROM";
 
-  let targetHours = 8.5;
-  if (goal === "small") targetHours = 4;
-  else if (goal === "large") targetHours = 8.5;
-  else targetHours = weight > 5000 ? 8.5 : 4;
+  const highCalc = crewCalcForWeight(weight, rom, miles, useShuttle, travelHours);
+  const lowCalc = crewCalcForWeight(lowWeight || weight, rom, miles, useShuttle, travelHours);
 
-  let crew = 2;
-  let hours = 0;
-  if (weight > 0 && rom > 0) {
-    crew = Math.ceil(weight / (rom * targetHours));
-    crew = Math.max(2, Math.min(5, crew));
-    hours = weight / (crew * rom);
+  if ($$("crewSuggested")) $$("crewSuggested").textContent = highCalc.crew;
+  if ($$("crewHours")) $$("crewHours").textContent = highCalc.labor ? fmtHours(highCalc.labor) : "0.0";
+  if ($$("crewClockHours")) $$("crewClockHours").textContent = highCalc.clock ? fmtHours(highCalc.clock) : "0.0";
+  if ($$("crewLaborRange")) {
+    const range = lowCalc.labor && highCalc.labor && lowCalc.labor !== highCalc.labor
+      ? `${fmtHours(lowCalc.labor)} - ${fmtHours(highCalc.labor)}`
+      : (highCalc.labor ? fmtHours(highCalc.labor) : "0.0");
+    $$("crewLaborRange").textContent = range;
   }
+  if ($$("crewTrucks")) $$("crewTrucks").textContent = highCalc.trucks;
+  if ($$("crewTruckNote")) $$("crewTruckNote").textContent = highCalc.note;
 
-  let trucks = Math.ceil(weight / 8000) || 1;
-  let truckNote = "Standard " + trucks + "-truck move";
-  if (weight > 8000 && weight <= 11000 && miles > 0 && miles < 15) {
-    trucks = 1;
-    truckNote = "1 truck can shuttle 2 trips (under 15 miles)";
-  } else if (trucks === 1) {
-    truckNote = "Standard 1-truck move";
-  } else {
-    truckNote = trucks + " trucks recommended by weight";
-  }
-
-  const maxCrewByTrucks = trucks * 5;
-  crew = Math.min(crew, maxCrewByTrucks);
-  crew = Math.max(2, crew);
-
-  if (weight > 0 && rom > 0) {
-    hours = weight / (crew * rom);
-  }
-
-  if ($$("crewSuggested")) $$("crewSuggested").textContent = crew;
-  if ($$("crewHours")) $$("crewHours").textContent = (hours ? hours.toFixed(1) : "0.0");
-  if ($$("crewTrucks")) $$("crewTrucks").textContent = trucks;
-  if ($$("crewTruckNote")) $$("crewTruckNote").textContent = truckNote;
+  const weightLine = (lowWeight && highWeight && lowWeight !== highWeight)
+    ? `${lowWeight.toLocaleString()} - ${highWeight.toLocaleString()} lbs`
+    : (weight ? weight.toLocaleString() + " lbs" : "Not entered");
+  const laborLine = (lowCalc.labor && highCalc.labor && lowCalc.labor !== highCalc.labor)
+    ? `${fmtHours(lowCalc.labor)} - ${fmtHours(highCalc.labor)} hrs`
+    : `${highCalc.labor ? fmtHours(highCalc.labor) : "0.0"} hrs`;
 
   const notes = [
-    "Estimated Weight: " + (weight ? weight.toLocaleString() + " lbs" : "Not entered"),
+    "Estimated Weight Range: " + weightLine,
     "Using ROM: " + rom,
-    "Goal Window: " + (goal === "small" ? "4 hours" : goal === "large" ? "8-10 hours" : (weight > 5000 ? "8-10 hours" : "4 hours")),
-    "Suggested Crew: " + crew + " guys",
-    "Estimated Hours: " + (hours ? hours.toFixed(1) : "0.0"),
-    "Recommended Trucks: " + trucks,
-    "Truck Note: " + truckNote
+    "Origin to Destination Miles: " + (miles ? miles + " miles" : "Not entered"),
+    "One-Way Travel: " + (travelHours ? fmtHours(travelHours) + " hrs" : "Not entered"),
+    "Suggested Crew: " + highCalc.crew + " guys",
+    "Recommended Trucks: " + highCalc.trucks,
+    "Labor Estimate: " + laborLine,
+    "Labor + Travel Clock: " + (highCalc.clock ? fmtHours(highCalc.clock) : "0.0") + " hrs (first 1 hr travel ignored for max)",
+    "Truck/Shuttle Note: " + highCalc.note,
+    "Delivery Timing: " + highCalc.deliveryNote + (travelHours ? ` (${fmtHours(highCalc.totalSameDayDeliveryClock)} hrs labor + one-way travel)` : ""),
+    "Rules: 5 men max per truck. 6-8 men only for true 2-truck jobs. Shuttle stays 5 men max. Goal is around 9 labor hrs; 11 hrs is acceptable when it avoids a second day."
   ];
   if ($$("crewNotes")) $$("crewNotes").value = notes.join("\n");
 }
@@ -7007,9 +7287,9 @@ document.addEventListener("DOMContentLoaded", () => {
   romUpdate();
   if ($$("crewWeight")) $$("crewWeight").addEventListener("input", crewUpdate);
   if ($$("crewMiles")) $$("crewMiles").addEventListener("input", crewUpdate);
-  if ($$("crewGoal")) $$("crewGoal").addEventListener("change", crewUpdate);
+  if ($$("crewTravelHours")) $$("crewTravelHours").addEventListener("input", crewUpdate);
   if ($$("crewUseShuttle")) $$("crewUseShuttle").addEventListener("change", crewUpdate);
-  ["bqWeightType","bqSqft","bqGarage","bqFurnishing","bqYears","romWeightValue","romMoveType","romOriginType","romOriginFloor","romOriginElevator","romOriginLongWalk","romOriginDriveUp","romDestType","romDestFloor","romDestElevator","romDestLongWalk","romDestDriveUp"].forEach(id => {
+  ["bqWeightType","bqSqft","bqGarage","bqFurnishing","bqYears","romWeightValue","romWeightLowValue","romWeightHighValue","romLaborCrewSize","romMoveType","romOriginType","romOriginFloor","romOriginElevator","romOriginLongWalk","romOriginDriveUp","romDestType","romDestFloor","romDestElevator","romDestLongWalk","romDestDriveUp"].forEach(id => {
     const el = $$(id);
     if (!el) return;
     el.addEventListener("input", crewUpdate);
