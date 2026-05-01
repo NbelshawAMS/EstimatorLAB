@@ -316,6 +316,16 @@ body.wide-pane #form-panel { display:none; }
   }
   .quote-section-body { display:block; }
 
+
+  /* Customer Remarks font */
+  #full-pane,
+  #manualNotes,
+  #customer-remarks-box,
+  #customer-remarks-box .preview-content,
+  #preview-content {
+    font-family: Consolas, 'Courier New', monospace !important;
+  }
+
 </style>
 
 <script>
@@ -534,7 +544,7 @@ body.wide-pane #form-panel { display:none; }
     <div class="section-head">AMS Storage</div>
     <div style="background:linear-gradient(180deg,#fbfefb 0%,#f4fbf4 100%);border:1.5px solid #c8e6c9;border-radius:12px;padding:12px 12px 10px;margin-top:6px;box-shadow:0 4px 12px rgba(0,0,0,0.03);">
       <div style="font-size:10px;font-weight:900;letter-spacing:0.12em;text-transform:uppercase;color:#2e7d32;margin-bottom:8px;">Refer to Offices w/ Storage</div>
-      <div style="font-size:11px;line-height:1.55;color:#49604d;margin-bottom:10px;">Use the storage office page for monthly rates, vault estimates, and storage note wording.</div>
+      <div style="font-size:11px;line-height:1.55;color:#49604d;margin-bottom:10px;">Use the storage office page for office storage notes and storage wording.</div>
       <button type="button" onclick="switchTab('offices')" style="width:100%;background:#111;color:#d7f0da;border:1.5px solid #2e7d32;border-radius:9px;padding:10px 12px;font-size:11px;font-weight:800;letter-spacing:0.08em;text-transform:uppercase;cursor:pointer;font-family:Georgia,serif;text-align:center;box-shadow:0 4px 10px rgba(0,0,0,0.08);">
         Open Offices w/ Storage
       </button>
@@ -585,7 +595,7 @@ body.wide-pane #form-panel { display:none; }
       </div>
       <!-- Editable notes area -->
       <div style="margin-bottom:16px;max-width:680px;">
-        <textarea id="manualNotes" placeholder="Type your notes here..." style="width:100%;min-height:120px;font-size:13px;font-family:Georgia,'Times New Roman',serif;line-height:1.8;padding:12px 16px;border:2px solid #c8e6c9;border-radius:8px;resize:vertical;color:#111;background:#fff;"></textarea>
+        <textarea id="manualNotes" placeholder="Type your notes here..." style="width:100%;min-height:120px;font-size:13px;font-family:Consolas,'Courier New',monospace;line-height:1.8;padding:12px 16px;border:2px solid #c8e6c9;border-radius:8px;resize:vertical;color:#111;background:#fff;"></textarea>
       </div>
       <!-- Generated notes -->
       <div class="notes-box" id="customer-remarks-box">
@@ -1602,7 +1612,7 @@ body.wide-pane #form-panel { display:none; }
 
         <!-- Instructions -->
         <div style="background:#e8f5e9;border:1.5px solid #a5d6a7;border-radius:8px;padding:12px 16px;margin-bottom:20px;font-size:12.5px;color:#1b5e20;line-height:1.6;">
-          <strong>📋 How to use:</strong> Click an office below to see storage rates &amp; available vaults → Enter the shipment weight on the right → The cost and notes will be generated automatically.
+          <strong>📋 How to use:</strong> Click an office below to generate storage note wording.
         </div>
 
         <div style="display:flex;gap:24px;flex-wrap:wrap;">
@@ -1619,40 +1629,8 @@ body.wide-pane #form-panel { display:none; }
             <!-- Selected Office Info -->
             <div id="storageOfficeInfo" style="display:none;background:#fff;border:2px solid #2e7d32;border-radius:10px;padding:16px 18px;margin-bottom:16px;">
               <div id="storageOfficeName" style="font-size:16px;font-weight:900;color:#1b5e20;margin-bottom:10px;"></div>
-              <div style="display:flex;gap:12px;">
-                <div style="flex:1;background:#e8f5e9;border-radius:7px;padding:10px;text-align:center;">
-                  <div style="font-size:9px;font-weight:800;color:#2e7d32;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:3px;">Rate / Vault</div>
-                  <div id="storageOfficeRate" style="font-size:22px;font-weight:900;color:#1b5e20;"></div>
-                  <div style="font-size:9px;color:#555;">per month</div>
-                </div>
-                <div style="flex:1;background:#e8f5e9;border-radius:7px;padding:10px;text-align:center;">
-                  <div style="font-size:9px;font-weight:800;color:#2e7d32;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:3px;">Empty Vaults</div>
-                  <div id="storageOfficeVaults" style="font-size:22px;font-weight:900;color:#1b5e20;"></div>
-                  <div style="font-size:9px;color:#555;">available</div>
-                </div>
-              </div>
             </div>
 
-            <!-- Calculator -->
-            <div id="storageCalcSection" style="display:none;background:#fff;border:2px solid #c8e6c9;border-radius:10px;padding:16px 18px;">
-              <div style="font-size:13px;font-weight:800;color:#1b5e20;margin-bottom:12px;">📐 Storage Calculator</div>
-              <label style="font-size:11px;font-weight:700;color:#333;display:block;margin-bottom:5px;">Shipment Weight (lbs)</label>
-              <input type="number" id="storageWeightInput" placeholder="e.g. 8005" min="0" style="width:100%;box-sizing:border-box;padding:10px 12px;border:2px solid #c8e6c9;border-radius:7px;font-size:14px;font-weight:700;font-family:Arial,sans-serif;margin-bottom:12px;" oninput="calcStorage()">
-
-              <!-- Results -->
-              <div id="storageCalcResults" style="display:none;">
-                <div style="display:flex;gap:10px;margin-bottom:4px;">
-                  <div style="flex:1;background:#f0faf0;border-radius:6px;padding:8px;text-align:center;">
-                    <div style="font-size:9px;font-weight:800;color:#2e7d32;text-transform:uppercase;letter-spacing:0.05em;">Vaults Needed</div>
-                    <div id="storageCalcVaults" style="font-size:20px;font-weight:900;color:#1b5e20;"></div>
-                  </div>
-                  <div style="flex:1;background:#f0faf0;border-radius:6px;padding:8px;text-align:center;">
-                    <div style="font-size:9px;font-weight:800;color:#2e7d32;text-transform:uppercase;letter-spacing:0.05em;">Monthly Cost</div>
-                    <div id="storageCalcCost" style="font-size:20px;font-weight:900;color:#1b5e20;"></div>
-                  </div>
-                </div>
-              </div>
-            </div>
 
           </div><!-- /right -->
         </div><!-- /flex -->
@@ -1674,7 +1652,7 @@ body.wide-pane #form-panel { display:none; }
 <script>
 // ============================================================
 // OFFICE STORAGE DATA
-// Edit rates (per vault per month) and emptyVaults for each office
+// Storage office data. Rates and empty vaults are retained in data but not displayed on the page.
 // ============================================================
 const STORAGE_OFFICES = {
   "Atlanta":        { rate: 80, emptyVaults: 27 },
@@ -4568,39 +4546,19 @@ function selectStorageOffice(name) {
   // Show info
   document.getElementById('storageOfficeInfo').style.display = 'block';
   document.getElementById('storageOfficeName').textContent = name;
-  document.getElementById('storageOfficeRate').textContent = '$' + data.rate;
-  document.getElementById('storageOfficeVaults').textContent = data.emptyVaults;
-
-  // Show calculator
-  document.getElementById('storageCalcSection').style.display = 'block';
-
-  // Recalc if weight already entered
+  // Generate storage note without pricing or vault counts
   calcStorage();
 }
 
 function calcStorage() {
   if (!selectedOffice) return;
-  const weightInput = document.getElementById('storageWeightInput');
-  const weight = parseFloat(weightInput.value);
-  if (!weight || weight <= 0) {
-    document.getElementById('storageCalcResults').style.display = 'none';
-    document.getElementById('storageNoteSection').style.display = 'none';
-    return;
-  }
 
-  const data = STORAGE_OFFICES[selectedOffice];
-  // Round weight up to nearest 1000, then divide by 1000 for vaults
-  const roundedWeight = Math.ceil(weight / 1000) * 1000;
-  const vaults = roundedWeight / 1000;
-  const totalCost = vaults * data.rate;
+  // Generate note with no pricing and no vault count
+  const note = `This estimate is for a move into AMS ${selectedOffice} Storage
 
-  // Show results
-  document.getElementById('storageCalcResults').style.display = 'flex';
-  document.getElementById('storageCalcVaults').textContent = vaults;
-  document.getElementById('storageCalcCost').textContent = '$' + totalCost.toLocaleString();
+There is no direct access to items in AMS storage.
 
-  // Generate note
-  const note = `This estimate is for a move into AMS ${selectedOffice} Storage\n\n${vaults} vault${vaults !== 1 ? 's are' : ' is'} estimated at $${data.rate}/vault which comes out to $${totalCost.toLocaleString()}/month for monthly storage.\n\nThere is no direct access to items in AMS storage.\n\nMove out of AMS storage is a separate cost, a new estimate will be provided once a destination is known.`;
+Move out of AMS storage is a separate cost, a new estimate will be provided once a destination is known.`;
 
   document.getElementById('storageNoteSection').style.display = 'block';
   document.getElementById('storageNoteBox').textContent = note;
